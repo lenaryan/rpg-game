@@ -4,8 +4,9 @@ import Leah from './assets/leah.png';
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 
-const canvasW = 600;
-const canvasH = 600;
+const canvasW = canvas.getAttribute('width');
+console.log("canvas.getAttribute('width')", canvas.getAttribute('width'));
+const canvasH = canvas.getAttribute('height');
 
 const spriteW = 48;
 const spriteH = 48;
@@ -15,49 +16,20 @@ const startY = canvasH / 2 - spriteH / 2;
 
 const shots = 3;
 let cycle = 0;
-let bottomPressed = false;
-let topPressed = false;
-let leftPressed = false;
-let rightPressed = false;
+
+let keyPressed = null;
+
 let pX = startX;
 let pY = startY;
 let skin = 0;
 const gap = 10;
 
 function keyDownHandler(e) {
-  if (e.key === 'Down' || e.key === 'ArrowDown') {
-    bottomPressed = true;
-  }
-
-  if (e.key === 'Up' || e.key === 'ArrowUp') {
-    topPressed = true;
-  }
-
-  if (e.key === 'Left' || e.key === 'ArrowLeft') {
-    leftPressed = true;
-  }
-
-  if (e.key === 'Right' || e.key === 'ArrowRight') {
-    rightPressed = true;
-  }
+  keyPressed = e.key;
 }
 
-function keyUpHandler(e) {
-  if (e.key === 'Down' || e.key === 'ArrowDown') {
-    bottomPressed = false;
-  }
-
-  if (e.key === 'Up' || e.key === 'ArrowUp') {
-    topPressed = false;
-  }
-
-  if (e.key === 'Left' || e.key === 'ArrowLeft') {
-    leftPressed = false;
-  }
-
-  if (e.key === 'Right' || e.key === 'ArrowRight') {
-    rightPressed = false;
-  }
+function keyUpHandler() {
+  keyPressed = null;
 }
 
 document.addEventListener('keydown', keyDownHandler);
@@ -79,37 +51,42 @@ img.addEventListener('load', () => {
     spriteH
   );
   setInterval(() => {
-    if (bottomPressed) {
-      if (pY < canvasH - spriteH - gap) {
-        pY += 10;
-      }
-      cycle = (cycle + 1) % shots;
-      skin = 0;
+    switch (keyPressed) {
+      case 'Down':
+      case 'ArrowDown':
+        if (pY < canvasH - spriteH - gap) {
+          pY += 10;
+        }
+        cycle = (cycle + 1) % shots;
+        skin = 0;
+        break;
+      case 'Up':
+      case 'ArrowUp':
+        if (pY > gap) {
+          pY -= 10;
+        }
+        cycle = (cycle + 1) % shots;
+        skin = spriteH * 3;
+        break;
+      case 'Left':
+      case 'ArrowLeft':
+        if (pX > gap) {
+          pX -= 10;
+        }
+        cycle = (cycle + 1) % shots;
+        skin = spriteH;
+        break;
+      case 'Right':
+      case 'ArrowRight':
+        if (pX < canvasW - spriteW - gap) {
+          pX += 10;
+        }
+        cycle = (cycle + 1) % shots;
+        skin = spriteH * 2;
+        break;
+      default: break;
     }
 
-    if (topPressed) {
-      if (pY > gap) {
-        pY -= 10;
-      }
-      cycle = (cycle + 1) % shots;
-      skin = spriteH * 3;
-    }
-
-    if (leftPressed) {
-      if (pX > gap) {
-        pX -= 10;
-      }
-      cycle = (cycle + 1) % shots;
-      skin = spriteH;
-    }
-
-    if (rightPressed) {
-      if (pX < canvasW - spriteW - gap) {
-        pX += 10;
-      }
-      cycle = (cycle + 1) % shots;
-      skin = spriteH * 2;
-    }
     ctx.clearRect(0, 0, canvasW, canvasH);
 
     // background
