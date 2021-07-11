@@ -31,7 +31,7 @@ module.exports = {
             ],
         },
         {
-            test: [/\.svg$/, /\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/],
+            test: [/\.svg$/, /\.bmp$/, /\.gif$/, /\.jpe?g$/, /\.png$/, /\.webp$/],
             use: [
                 {
                     loader: 'file-loader',
