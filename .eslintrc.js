@@ -3,12 +3,12 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  extends: ["airbnb-base"],
+  extends: [
+    "airbnb-base",
+    "prettier"
+  ],
   parserOptions: {
     ecmaVersion: 12,
     sourceType: "module",
-  },
-  rules: {
-    "comma-dangle": ["error", "never"],
   },
 };
