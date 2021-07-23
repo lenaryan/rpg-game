@@ -40,39 +40,22 @@ class ClientGame {
     });
   }
 
+  moveSkin(event, coordX, coordY, cellType) {
+    if (event) {
+      this.player.moveByCellCoord(coordX, coordY, (cell) => cell.findObjectsByType(cellType).length);
+    }
+  }
+
   initKeys() {
     this.engine.input.onKey({
-      ArrowLeft: (keydown) => {
-        if (keydown) {
-          /* eslint-disable */
-          this.player.moveByCellCoord(-1, 0, (cell) => {
-            return cell.findObjectsByType('grass').length;
-          });
-        }
-      },
-      ArrowRight: (keydown) => {
-        if (keydown) {
-          this.player.moveByCellCoord(1, 0, (cell) => {
-            return cell.findObjectsByType('grass').length;
-          });
-        }
-      },
-      ArrowUp: (keydown) => {
-        if (keydown) {
-          this.player.moveByCellCoord(0, -1, (cell) => {
-            return cell.findObjectsByType('grass').length;
-          });
-        }
-      },
-      ArrowDown: (keydown) => {
-        if (keydown) {
-          this.player.moveByCellCoord(0, 1, (cell) => {
-            return cell.findObjectsByType('grass').length;
-          });
-        }
-      },
+      ArrowLeft: (keydown) => this.moveSkin(keydown, -1, 0, 'grass'),
+      ArrowRight: (keydown) => this.moveSkin(keydown, 1, 0, 'grass'),
+      ArrowUp: (keydown) => this.moveSkin(keydown, 0, -1, 'grass'),
+      ArrowDown: (keydown) => this.moveSkin(keydown, 0, 1, 'grass'),
     });
   }
+
+  /* eslint-enable */
 
   static init(cfg) {
     if (!ClientGame.game) {
