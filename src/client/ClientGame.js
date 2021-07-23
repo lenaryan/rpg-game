@@ -42,7 +42,11 @@ class ClientGame {
 
   moveSkin(event, coordX, coordY, cellType) {
     if (event) {
-      this.player.moveByCellCoord(coordX, coordY, (cell) => cell.findObjectsByType(cellType).length);
+      this.player.moveByCellCoord(
+        coordX,
+        coordY,
+        (cell) => cell.findObjectsByType(cellType).length
+      );
     }
   }
 
