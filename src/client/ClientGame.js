@@ -45,14 +45,14 @@ class ClientGame {
     });
   }
 
-  movePlayerToDir(coordX, coordY, cellType, state) {
+  movePlayerToDir(coordX, coordY, state) {
     const { player } = this;
 
     if (player && player.motionProgress === 1) {
       const canMove = player.moveByCellCoord(
         coordX,
         coordY,
-        (cell) => cell.findObjectsByType(cellType).length
+        (cell) => cell.findObjectsByType('grass').length
       );
 
       if (canMove) {
@@ -62,40 +62,12 @@ class ClientGame {
     }
   }
 
-  // movePlayerToDir(dir) {
-  //   const dirs = {
-  //     left: [-1, 0],
-  //     right: [1, 0],
-  //     up: [0, -1],
-  //     down: [0, 1]
-  //   }
-
-  //   const { player } = this;
-
-  //   if (player && player.motionProgress === 1) {
-  //     const canMove = player.moveByCellCoord(
-  //       dirs[dir][0],
-  //       dirs[dir][1],
-  //       (cell) => cell.findObjectsByType('grass').length
-  //     );
-
-  //     if (canMove) {
-  //       player.setState(dir);
-  //       player.once('motion-stopped', () => this.player.setState('main'))
-  //     }
-  //   }
-  // }
-
   initKeys() {
     this.engine.input.onKey({
-      ArrowLeft: (keydown) =>
-        keydown && this.movePlayerToDir(-1, 0, 'grass', 'left'),
-      ArrowRight: (keydown) =>
-        keydown && this.movePlayerToDir(1, 0, 'grass', 'right'),
-      ArrowUp: (keydown) =>
-        keydown && this.movePlayerToDir(0, -1, 'grass', 'up'),
-      ArrowDown: (keydown) =>
-        keydown && this.movePlayerToDir(0, 1, 'grass', 'down'),
+      ArrowLeft: (keydown) => keydown && this.movePlayerToDir(-1, 0, 'left'),
+      ArrowRight: (keydown) => keydown && this.movePlayerToDir(1, 0, 'right'),
+      ArrowUp: (keydown) => keydown && this.movePlayerToDir(0, -1, 'up'),
+      ArrowDown: (keydown) => keydown && this.movePlayerToDir(0, 1, 'down'),
     });
   }
 

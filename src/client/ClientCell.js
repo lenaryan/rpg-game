@@ -53,7 +53,7 @@ class ClientCell extends PositionedObject {
       objects[objToAdd.layerId] = [];
     }
 
-    this.objects.push(objToAdd);
+    objects.push(objToAdd);
   }
 
   removeGameObject(objToRemove) {
@@ -70,11 +70,12 @@ class ClientCell extends PositionedObject {
   findObjectsByType(type) {
     let foundObjects = [];
 
+    /* eslint-disable */
     this.objects
-      /* eslint-disable */
       .forEach((layer) => (foundObjects = [...foundObjects, ...layer]))
-      /* eslint-enable */
       .filter((obj) => obj.type === type);
+    /* eslint-enable */
+
     return foundObjects;
   }
 }
