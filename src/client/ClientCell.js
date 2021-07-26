@@ -59,8 +59,8 @@ class ClientCell extends PositionedObject {
   removeGameObject(objToRemove) {
     const { objects } = this;
 
+    /* eslint-disable */
     objects.forEach(
-      /* eslint-disable */
       (layer, layerId) =>
         (objects[layerId] = layer.filter((obj) => obj !== objToRemove))
       /* eslint-enable */
@@ -71,9 +71,12 @@ class ClientCell extends PositionedObject {
     let foundObjects = [];
 
     /* eslint-disable */
-    this.objects
-      .forEach((layer) => (foundObjects = [...foundObjects, ...layer]))
-      .filter((obj) => obj.type === type);
+    this.objects.forEach(
+      (layer) =>
+        (foundObjects = [...foundObjects, ...layer].filter(
+          (obj) => obj.type === type
+        ))
+    );
     /* eslint-enable */
 
     return foundObjects;
