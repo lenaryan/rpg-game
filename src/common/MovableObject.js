@@ -24,9 +24,8 @@ class MovableObject extends PositionedObject {
     );
   }
 
-  /* eslint-disable */
+  // eslint-disable-next-line
   animateMotion(time) {
-    /* eslint-enable */
     if (this.speed) {
       const me = this;
 
@@ -51,13 +50,12 @@ class MovableObject extends PositionedObject {
   }
 
   render(time) {
-    /* eslint-disable */
+    // eslint-disable-next-line
     this.speed && this.animateMotion(time);
   }
 
-  /* eslint-disable */
+  // eslint-disable-next-line
   moveTo(x, y, smooth = true, speed = 200) {
-    /* eslint-enable */
     let [newX, newY] = [x, y];
     const { width, height } = this;
 

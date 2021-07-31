@@ -5,16 +5,11 @@ class ClientGameObject extends MovableObject {
   constructor(cfg) {
     super();
 
-    const { x, y, width, height } = cfg.cell;
+    const { x, y, width, height, world } = cfg.cell;
 
-    const { world } = cfg.cell;
     const gameObjs = world.game.gameObjects;
     const objCfg =
       typeof cfg.objCfg === 'string' ? { type: cfg.objCfg } : cfg.objCfg;
-
-    if (objCfg.player) {
-      world.game.setPlayer(this);
-    }
 
     Object.assign(
       this,
@@ -85,9 +80,8 @@ class ClientGameObject extends MovableObject {
       state.duration,
       true
     );
-    /* eslint-disable */
+    // eslint-disable-next-line
     const frame = ((lengthFrame + animate.offset) | 0) % lengthFrame;
-    /* eslint-enable */
 
     return state.frames[frame];
   }

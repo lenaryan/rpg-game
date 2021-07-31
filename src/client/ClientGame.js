@@ -19,6 +19,7 @@ class ClientGame {
 
   setPlayer(player) {
     this.player = player;
+    this.player.playerName = this.cfg.playerName;
   }
 
   createEngine() {
@@ -57,7 +58,7 @@ class ClientGame {
 
       if (canMove) {
         player.setState(state);
-        player.once('motion-stopped', () => this.player.setState('main'));
+        player.once('motion-stopped', () => player.setState('main'));
       }
     }
   }
