@@ -1,4 +1,4 @@
-import clamp from './util';
+import clamp, { animateEx } from './util';
 import PositionedObject from './PositionedObject';
 
 class MovableObject extends PositionedObject {
@@ -24,13 +24,18 @@ class MovableObject extends PositionedObject {
     );
   }
 
-  /* eslint-disable */
+  // eslint-disable-next-line
   animateMotion(time) {
-    /* eslint-enable */
     if (this.speed) {
       const me = this;
 
-      const [newX, newY] = [me.toX, me.toY];
+      const dx = animateEx(me.deltaX, me.motionStartTime, time, me.speed);
+      const dy = animateEx(me.deltaY, me.motionStartTime, time, me.speed);
+
+      const newX = me.toX + dx.offset - me.deltaX;
+      const newY = me.toY + dy.offset - me.deltaY;
+
+      me.motionProgress = dx.progress;
 
       if (newX === me.toX && newY === me.toY) {
         me.speed = 0;
@@ -45,13 +50,12 @@ class MovableObject extends PositionedObject {
   }
 
   render(time) {
-    /* eslint-disable */
+    // eslint-disable-next-line
     this.speed && this.animateMotion(time);
   }
 
-  /* eslint-disable */
+  // eslint-disable-next-line
   moveTo(x, y, smooth = true, speed = 200) {
-    /* eslint-enable */
     let [newX, newY] = [x, y];
     const { width, height } = this;
 
@@ -65,8 +69,25 @@ class MovableObject extends PositionedObject {
       }
     }
 
-    this.x = newX;
-    this.y = newY;
+    if (smooth) {
+      this.startMotion(newX, newY, speed);
+    } else {
+      this.x = newX;
+      this.y = newY;
+    }
+  }
+
+  startMotion(newX, newY, speed) {
+    if (this.world) {
+      Object.assign(this, {
+        motionStartTime: this.world.engine.lastRenderTime,
+        speed,
+        toX: newX,
+        toY: newY,
+        deltaX: newX - this.x,
+        deltaY: newY - this.y,
+      });
+    }
   }
 }
 
