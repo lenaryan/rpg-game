@@ -22,17 +22,22 @@ class ClientGame {
   }
 
   createEngine() {
-    return new ClientEngine(document.getElementById(this.cfg.tagId));
+    return new ClientEngine(document.getElementById(this.cfg.tagId), this);
   }
 
   createWorld() {
     return new ClientWorld(this, this.engine, levelCfg);
   }
 
+  getWorld() {
+    return this.map;
+  }
+
   initEngine() {
     this.engine.loadSprites(sprites).then(() => {
       this.map.init();
       this.engine.on('render', (_, time) => {
+        this.engine.camera.focusAtGameObject(this.player);
         this.map.render(time);
       });
       this.engine.start();
@@ -40,22 +45,29 @@ class ClientGame {
     });
   }
 
-  moveSkin(event, coordX, coordY, cellType) {
-    if (event) {
-      this.player.moveByCellCoord(
+  movePlayerToDir(coordX, coordY, state) {
+    const { player } = this;
+
+    if (player && player.motionProgress === 1) {
+      const canMove = player.moveByCellCoord(
         coordX,
         coordY,
-        (cell) => cell.findObjectsByType(cellType).length
+        (cell) => cell.findObjectsByType('grass').length
       );
+
+      if (canMove) {
+        player.setState(state);
+        player.once('motion-stopped', () => this.player.setState('main'));
+      }
     }
   }
 
   initKeys() {
     this.engine.input.onKey({
-      ArrowLeft: (keydown) => this.moveSkin(keydown, -1, 0, 'grass'),
-      ArrowRight: (keydown) => this.moveSkin(keydown, 1, 0, 'grass'),
-      ArrowUp: (keydown) => this.moveSkin(keydown, 0, -1, 'grass'),
-      ArrowDown: (keydown) => this.moveSkin(keydown, 0, 1, 'grass'),
+      ArrowLeft: (keydown) => keydown && this.movePlayerToDir(-1, 0, 'left'),
+      ArrowRight: (keydown) => keydown && this.movePlayerToDir(1, 0, 'right'),
+      ArrowUp: (keydown) => keydown && this.movePlayerToDir(0, -1, 'up'),
+      ArrowDown: (keydown) => keydown && this.movePlayerToDir(0, 1, 'down'),
     });
   }
 
