@@ -47,15 +47,16 @@ window.addEventListener('load', () => {
     );
     const nickname = data.msg.substring(0, data.msg.indexOf(' '));
     users[data.id] = {
-      nickname: nickname,
-      color: '#' + (((1 << 24) * Math.random()) | 0).toString(16),
+      nickname,
+      // eslint-disable-next-line
+      color: `#${(((1 << 24) * Math.random()) | 0).toString(16)}`,
     };
   });
 
   socket.on('chat disconnect', (data) => {
     chatMessage.insertAdjacentHTML(
       'beforeend',
-      `<p style="color: ${users[data.id]['color']}"><strong>${getTime(
+      `<p style="color: ${users[data.id].color}"><strong>${getTime(
         data.time
       )}</strong> - ${data.msg}</p>`
     );
@@ -64,9 +65,9 @@ window.addEventListener('load', () => {
   socket.on('chat message', (data) => {
     chatMessage.insertAdjacentHTML(
       'beforeend',
-      `<p style="color: ${users[data.id]['color']}"><strong>${getTime(
+      `<p style="color: ${users[data.id].color}"><strong>${getTime(
         data.time
-      )}</strong> <strong>[${users[data.id]['nickname']}]</strong>: ${
+      )}</strong> <strong>[${users[data.id].nickname}]</strong>: ${
         data.msg
       }</p>`
     );
