@@ -1,5 +1,6 @@
 import PositionedObject from '../common/PositionedObject';
 import ClientGameObject from './ClientGameObject';
+import ClientPlayer from './ClientPlayer';
 
 class ClientCell extends PositionedObject {
   constructor(cfg) {
@@ -15,6 +16,11 @@ class ClientCell extends PositionedObject {
         y: cellWidth * cfg.cellRow,
         width: cellWidth,
         height: cellHeight,
+        col: cfg.cellCol,
+        row: cfg.cellRow,
+        objectClasses: {
+          player: ClientPlayer,
+        },
       },
       cfg
     );
@@ -23,12 +29,25 @@ class ClientCell extends PositionedObject {
   }
 
   initGameObjects() {
-    const { cellCfg } = this;
+    const { cellCfg, objectClasses } = this;
 
     this.objects = cellCfg.map((layer, layerId) =>
-      layer.map(
-        (objCfg) => new ClientGameObject({ cell: this, objCfg, layerId })
-      )
+      layer.map((objCfg) => {
+        let ObjectClass;
+
+        if (objCfg.class) {
+          ObjectClass = objectClasses[objCfg.class];
+        } else {
+          ObjectClass = ClientGameObject;
+        }
+
+        return new ObjectClass({
+          cell: this,
+          objCfg,
+          layerId,
+          playerName: this.world.game.cfg?.playerName,
+        });
+      })
     );
   }
 
@@ -44,9 +63,8 @@ class ClientCell extends PositionedObject {
     const { objects } = this;
 
     if (objToAdd.layerId === undefined) {
-      /* eslint-disable */
+      // eslint-disable-next-line
       objToAdd.layerId = objects.length;
-      /* eslint-enable */
     }
 
     if (!objects[objToAdd.layerId]) {
@@ -59,25 +77,23 @@ class ClientCell extends PositionedObject {
   removeGameObject(objToRemove) {
     const { objects } = this;
 
-    /* eslint-disable */
     objects.forEach(
+      // eslint-disable-next-line
       (layer, layerId) =>
         (objects[layerId] = layer.filter((obj) => obj !== objToRemove))
-      /* eslint-enable */
     );
   }
 
   findObjectsByType(type) {
     let foundObjects = [];
 
-    /* eslint-disable */
     this.objects.forEach(
+      // eslint-disable-next-line
       (layer) =>
         (foundObjects = [...foundObjects, ...layer].filter(
           (obj) => obj.type === type
         ))
     );
-    /* eslint-enable */
 
     return foundObjects;
   }

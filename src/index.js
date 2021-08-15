@@ -1,110 +1,79 @@
+import { io } from 'socket.io-client';
 import './index.scss';
-import Leah from './assets/leah.png';
-import terrainAtlas from './assets/terrain.webp';
-// import worldCfg from './configs/world.json';
-// import sprite from './configs/sprites';
 import ClientGame from './client/ClientGame';
-
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
-
-const canvasW = canvas.getAttribute('width');
-const canvasH = canvas.getAttribute('height');
-
-const skinW = 48;
-const skinH = 48;
-
-const startX = canvasW / 2 - skinW / 2;
-const startY = canvasH / 2 - skinH / 2;
-
-const shots = 3;
-let cycle = 0;
-
-let keyPressed = null;
-
-let pX = startX;
-let pY = startY;
-let skin = 0;
-const gap = 10;
-
-function keyDownHandler(e) {
-  keyPressed = e.key;
-}
-
-function keyUpHandler() {
-  keyPressed = null;
-}
-
-document.addEventListener('keydown', keyDownHandler);
-document.addEventListener('keyup', keyUpHandler);
-
-const img = document.createElement('img');
-img.src = Leah;
-
-const terrain = document.createElement('img');
-terrain.src = terrainAtlas;
-
-function walk() {
-  switch (keyPressed) {
-    case 'Down':
-    case 'ArrowDown':
-      if (pY < canvasH - skinH - gap) {
-        pY += 10;
-      }
-      cycle = (cycle + 1) % shots;
-      skin = 0;
-      break;
-    case 'Up':
-    case 'ArrowUp':
-      if (pY > gap) {
-        pY -= 10;
-      }
-      cycle = (cycle + 1) % shots;
-      skin = skinH * 3;
-      break;
-    case 'Left':
-    case 'ArrowLeft':
-      if (pX > gap) {
-        pX -= 10;
-      }
-      cycle = (cycle + 1) % shots;
-      skin = skinH;
-      break;
-    case 'Right':
-    case 'ArrowRight':
-      if (pX < canvasW - skinW - gap) {
-        pX += 10;
-      }
-      cycle = (cycle + 1) % shots;
-      skin = skinH * 2;
-      break;
-    default:
-      break;
-  }
-
-  ctx.clearRect(0, 0, canvasW, canvasH);
-
-  ctx.drawImage(img, cycle * skinW, skin, skinW, skinH, pX, pY, skinW, skinH);
-
-  window.requestAnimationFrame(walk);
-}
-
-img.addEventListener('load', () => {
-  // ctx.drawImage(
-  //   img,
-  //   cycle * skinW,
-  //   skin,
-  //   skinW,
-  //   skinH,
-  //   startX,
-  //   startY,
-  //   skinW,
-  //   skinH
-  // );
-
-  window.requestAnimationFrame(walk);
-});
+import { getTime } from './common/util';
 
 window.addEventListener('load', () => {
-  ClientGame.init({ tagId: 'game' });
+  const socket = io('https://jsprochat.herokuapp.com');
+  const form = document.querySelector('#nameForm');
+  const chatWrap = document.querySelector('.chat-wrap');
+  const chatForm = document.querySelector('#form');
+  const chatInput = document.querySelector('#input');
+  const chatMessage = document.querySelector('.message');
+  const onlineCount = document.querySelector('#online');
+  const users = {};
+
+  const submitName = (e) => {
+    e.preventDefault();
+    const playerName = form.querySelector('#name').value;
+    if (playerName) {
+      ClientGame.init({ tagId: 'game', playerName });
+
+      socket.emit('start', playerName);
+
+      chatWrap.style.display = 'block';
+
+      form.removeEventListener('submit', submitName);
+      document.querySelector('.start-game').remove();
+    }
+  };
+
+  form.addEventListener('submit', submitName);
+
+  chatForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    if (chatInput.value) {
+      socket.emit('chat message', chatInput.value);
+
+      chatInput.value = '';
+    }
+  });
+
+  socket.on('chat connection', (data) => {
+    chatMessage.insertAdjacentHTML(
+      'beforeend',
+      `<p><strong>${getTime(data.time)}</strong> - ${data.msg}</p>`
+    );
+    const nickname = data.msg.substring(0, data.msg.indexOf(' '));
+    users[data.id] = {
+      nickname,
+      // eslint-disable-next-line
+      color: `#${(((1 << 24) * Math.random()) | 0).toString(16)}`,
+    };
+  });
+
+  socket.on('chat disconnect', (data) => {
+    chatMessage.insertAdjacentHTML(
+      'beforeend',
+      `<p style="color: ${users[data.id].color}"><strong>${getTime(
+        data.time
+      )}</strong> - ${data.msg}</p>`
+    );
+  });
+
+  socket.on('chat message', (data) => {
+    chatMessage.insertAdjacentHTML(
+      'beforeend',
+      `<p style="color: ${users[data.id].color}"><strong>${getTime(
+        data.time
+      )}</strong> <strong>[${users[data.id].nickname}]</strong>: ${
+        data.msg
+      }</p>`
+    );
+  });
+
+  socket.on('chat online', (data) => {
+    onlineCount.innerHTML = `${data.online}`;
+  });
 });

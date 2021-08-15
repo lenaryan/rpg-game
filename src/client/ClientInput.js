@@ -14,14 +14,14 @@ class ClientInput {
 
   onKeyDown(e) {
     this.keysPressed.add(e.code);
-    /* eslint-disable */
+    // eslint-disable-next-line
     this.keyHandlers[e.code] && this.keyHandlers[e.code](true);
     this.trigger('keydown', e);
   }
 
   onKeyUp(e) {
     this.keysPressed.delete(e.code);
-    /* eslint-disable */
+    // eslint-disable-next-line
     this.keyHandlers[e.code] && this.keyHandlers[e.code](false);
     this.trigger('keyup', e);
   }
