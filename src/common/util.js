@@ -19,3 +19,12 @@ export function animateEx(dx, startTime, currentTime, speed, looped = false) {
 
   return { offset: dx * time, progress: time };
 }
+
+const normalize = (num) => (num >= 10 ? num : `0${num}`);
+
+export function getTime(date) {
+  const convertDate = new Date(date);
+  return `${normalize(convertDate.getHours())}:${normalize(
+    convertDate.getMinutes()
+  )}:${normalize(convertDate.getSeconds())}`;
+}
